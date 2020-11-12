@@ -4,7 +4,7 @@ const fs = require("fs");
 const Mustache = require("mustache");
 const multer = require("multer");
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
@@ -47,12 +47,17 @@ app.post("/add", upload.single("json"), (req, res) => {
     routes.push({
       url: req.body.path,
       json: req.file.originalname,
+      buffer: req.file.buffer,
     });
 
     app.get(`/${req.body.path}`, (_, response) => {
-      const path = "" + req.file.path;
-      const json = fs.readFileSync(`./${path}`, "utf-8");
-      response.send(json);
+      //   ** for multer.diskStorage:
+      //   const path = "" + req.file.path;
+      //   const json = fs.readFileSync(`./${path}`, "utf-8");
+      
+      //   ** for multer.memoryStorage:
+      const buff = routes.find((route) => route.url === req.body.path).buffer;
+      response.json(JSON.parse(buff.toString()));
     });
 
     return res.send("added");
