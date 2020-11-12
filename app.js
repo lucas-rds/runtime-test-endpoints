@@ -44,6 +44,13 @@ app.post("/add", upload.single("json"), (req, res) => {
   console.log(req.body);
 
   if (req.file && req.body && req.body.path) {
+    const foundRouteIndex = routes.findIndex(
+      (route) => route.url === req.body.path
+    );
+    if (foundRouteIndex != -1) {
+      routes.splice(foundRouteIndex, 1);
+    }
+
     routes.push({
       url: req.body.path,
       json: req.file.originalname,
@@ -54,7 +61,7 @@ app.post("/add", upload.single("json"), (req, res) => {
       //   ** for multer.diskStorage:
       //   const path = "" + req.file.path;
       //   const json = fs.readFileSync(`./${path}`, "utf-8");
-      
+
       //   ** for multer.memoryStorage:
       const buff = routes.find((route) => route.url === req.body.path).buffer;
       response.json(JSON.parse(buff.toString()));
