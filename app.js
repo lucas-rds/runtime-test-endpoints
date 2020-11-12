@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
+const cors = require('cors');
 const Mustache = require("mustache");
 const multer = require("multer");
 
@@ -28,6 +29,7 @@ const upload = multer({
   },
 });
 
+app.use(cors());
 const routes = [{ url: "/", method: "GET", json: "" }];
 app.get("/", (req, res) => {
   res.setHeader("Content-type", "text/html");
