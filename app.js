@@ -75,8 +75,15 @@ app.post("/add", upload.single("json"), (req, res) => {
       //   const json = fs.readFileSync(`./${path}`, "utf-8");
 
       //   ** for multer.memoryStorage:
-      const buff = routes.find((route) => route.url === req.body.path).buffer;
-      response.json(JSON.parse(buff.toString()));
+      try {
+        const buff = routes.find((route) => route.url === req.body.path).buffer;
+        response.json(JSON.parse(buff.toString()));
+      } catch (err) {
+        console.error(err);
+        response.status(500).send({
+          message: err.toString(),
+        });
+      }
     });
 
     return res.send("added");
