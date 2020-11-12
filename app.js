@@ -28,7 +28,7 @@ const upload = multer({
   },
 });
 
-const routes = [{ url: "/", json: "" }]; // [{ url:"/path", json: "name.json"}]
+const routes = [{ url: "/", method: "GET", json: "" }];
 app.get("/", (req, res) => {
   res.setHeader("Content-type", "text/html");
   const template = fs.readFileSync("./index.html", "utf-8");
@@ -39,13 +39,20 @@ app.get("/", (req, res) => {
   );
 });
 
+const isReqValid = (req) =>
+  req &&
+  req.file &&
+  req.body &&
+  req.body.path &&
+  ["POST", "GET"].includes(req.body.method);
+
 app.post("/add", upload.single("json"), (req, res) => {
   console.log(req.file);
   console.log(req.body);
 
-  if (req.file && req.body && req.body.path) {
+  if (isReqValid(req)) {
     const foundRouteIndex = routes.findIndex(
-      (route) => route.url === req.body.path
+      (route) => route.url === req.body.path && route.method === req.body.method
     );
     if (foundRouteIndex != -1) {
       routes.splice(foundRouteIndex, 1);
@@ -55,9 +62,14 @@ app.post("/add", upload.single("json"), (req, res) => {
       url: req.body.path,
       json: req.file.originalname,
       buffer: req.file.buffer,
+      method: req.body.method,
+      uri:
+        req.body.method == "POST"
+          ? req.body.path
+          : `<a href="${req.body.path}">${req.body.path}</a>`,
     });
 
-    app.get(`/${req.body.path}`, (_, response) => {
+    app[req.body.method.toLowerCase()](`/${req.body.path}`, (_, response) => {
       //   ** for multer.diskStorage:
       //   const path = "" + req.file.path;
       //   const json = fs.readFileSync(`./${path}`, "utf-8");

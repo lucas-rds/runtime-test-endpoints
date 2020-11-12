@@ -9,11 +9,18 @@
     <div class="container">
       <form onsubmit="return false" id="form" name="form">
         <div class="form-item">
-          <label>New Path (do not include / at start)</label><br />
+          <label>New Path (do not include / at start):</label><br />
           <input type="text" id="path" name="path" /><br />
         </div>
         <div class="form-item">
-          <label>Add a response json</label><br />
+          <label>Method: </label><br />
+          <select id="method" name="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+        </div>
+        <div class="form-item">
+          <label>Add a response json:</label><br />
           <input type="file" id="json" name="json" /><br />
         </div>
         <div class="form-item">
@@ -26,8 +33,14 @@
         </div>
         {{#routes}}
         <div class="item">
-          <div class="item-column">PATH: <a href="{{url}}">{{url}}</a></div>
+          <div class="item-column">PATH: {{{uri}}}</div>
+          <div class="item-column">METHOD: {{method}}</div>
           <div class="item-column">FILE: {{json}}</div>
+          <div
+            class="item-column curl"
+            data-method="{{method}}"
+            data-path="{{url}}"
+          ></div>
         </div>
         {{/routes}}
       </div>
@@ -48,6 +61,16 @@
           }
         });
       }
+
+      (function () {
+        for (const element of document.getElementsByClassName("curl")) {
+          if (element.dataset.method === "POST") {
+            return (element.innerText = `curl -i -d '' ${window.location.href}${element.dataset.path}`);
+          }
+
+          element.innerText = `curl -i ${window.location.href}${element.dataset.path}`;
+        }
+      })();
     </script>
 
     <style>
