@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <form onsubmit="return false" id="form" name="form">
+        <div class="form-item">
+          <label>New Path (do not include / at start)</label><br />
+          <input type="text" id="path" name="path" /><br />
+        </div>
+        <div class="form-item">
+          <label>Add a response json</label><br />
+          <input type="file" id="json" name="json" /><br />
+        </div>
+        <div class="form-item">
+          <input type="submit" onclick="addPath()" />
+        </div>
+      </form>
+      <div class="items">
+        <div class="item">
+          <h4>Routes:</h4>
+        </div>
+        {{#routes}}
+        <div class="item">
+          <div class="item-column">PATH: <a href="{{url}}">{{url}}</a></div>
+          <div class="item-column">FILE: {{json}}</div>
+        </div>
+        {{/routes}}
+      </div>
+    </div>
+
+    <script>
+      function addPath() {
+        const form = document.getElementById("form");
+        const formData = new FormData(form);
+
+        fetch("/add", {
+          method: "post",
+          body: formData,
+        }).then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            window.location.reload();
+          }
+        });
+      }
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+      }
+      html {
+        height: 100%;
+        background: #efeeee;
+      }
+      .container {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .items {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+
+        width: 50%;
+        border-radius: 11px;
+        background: #ffffff;
+        border: 1px solid #d9d9d9;
+      }
+      .item {
+        display: flex;
+        box-sizing: border-box;
+        border-bottom: 1px solid #efeeee;
+      }
+      .item h4 {
+        margin-left: 8px;
+      }
+
+      .item-column {
+        box-sizing: border-box;
+        display: flex;
+        padding: 10px;
+        border: 1px solid #efeeee;
+      }
+
+      .item-column a {
+        margin-left: 10px;
+      }
+
+      form {
+        width: 50%;
+        border: 1px dashed #d9d9d9;
+        background: #f2f2f2;
+        margin-bottom: 20px;
+      }
+      .form-item {
+        padding: 5px;
+      }
+    </style>
+  </body>
+</html>
